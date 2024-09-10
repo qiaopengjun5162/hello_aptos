@@ -1,0 +1,15 @@
+[package]
+name = "hello_world"
+version = "1.0.0"
+authors = []
+
+[addresses]
+my_addrx = "3b551727cac1bd5dc45023b869c9e37dd9e1830fc02ffe32f19597a668ba906d"
+[dev-addresses]
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dev-dependencies]

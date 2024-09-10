@@ -1,0 +1,6 @@
+*/.aptos
+# VSCode settings
+.vscode/
+*/build/
+.aptos/
+*/.idea/
