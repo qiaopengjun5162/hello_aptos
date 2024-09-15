@@ -1,17 +1,25 @@
+# **深入理解 Aptos Move 中的 Object 创建与管理**
+
+Aptos Move 是一种新兴的智能合约编程语言，它基于 Move 的架构，专注于安全性和资源管理。在 Aptos 中，Object 是一种关键的数据结构，提供了一种更高效的资源管理和所有权控制方式。本文将介绍 Aptos Object 的概念、类型、创建和转移方法，并通过实际代码示例，帮助开发者更好地理解其在智能合约中的应用。
+
+___
 
 
-Aptos Move
 
-认识 OBJECT
+本文深入探讨了 Aptos Move 中的 Object 概念，介绍了对象的两种主要类型：可删除和不可删除对象。通过实际的代码示例，展示了如何创建、设置和转移对象实例，并解释了对象的管理机制。同时，还列出了如何在 Aptos Move 环境中初始化项目并运行测试。最后，通过对核心源代码的解读，进一步说明了对象的底层实现原理，帮助开发者掌握如何在实际开发中灵活运用 Aptos Object。
 
-什么是 Aptos object？
+## **认识 OBJECT**
+
+### **什么是 Aptos object？**
+
+Aptos Object 是一个资源容器，专门用于存储资源并管理所有权。它具有以下几个特点：
 
 1. 对象是单个地址的资源容器，用于储存资源
 2. 对象提供了一种集中式资源控制与所有权管理的方法
 
-创建并转移对象实例
+### **创建并转移对象实例**
 
-我们可以通过 aptos_framework 库下的 object 来实现对象的功能。
+我们可以通过 aptos_framework 库中的 object 模块实现对象的创建与转移。以下是一个简化的示例，展示如何创建对象并将其转移到另一个地址：
 
 ```rust
 module my_addr::object_playground {
@@ -32,7 +40,7 @@ module my_addr::object_playground {
 }
 ```
 
-两类对象
+### 两类对象
 
 - 可删除普通对象
 - 不可删除对象
@@ -41,9 +49,13 @@ module my_addr::object_playground {
 
 
 
-## 实操
+## 代码实操
 
 ### 创建项目并初始化
+
+​	1.	使用 aptos init 命令初始化一个新的项目。
+
+​	2.	创建一个新的 Move 模块并编写对象的创建和转移逻辑。
 
 ```shell
 hello_aptos on  main [?] via 🅒 base
@@ -102,9 +114,11 @@ tree . -L 6 -I 'build'
 4 directories, 2 files
 ```
 
-### 代码
+### 代码示例
 
 #### `main.move`
+
+在 main.move 文件中，分别展示了创建可删除对象、命名对象和粘性对象的代码：
 
 ```rust
 module 0x42::myObject {
@@ -162,11 +176,15 @@ module 0x42::myObject {
 
 ### 运行测试
 
+可以通过测试函数验证对象的创建功能，如下图所示：
+
 ![image-20240914103648691](assets/image-20240914103648691.png)
 
 
 
 ## 查看源码
+
+通过查看 Aptos 框架中的 object.move 源码，可以更深入了解对象的底层实现逻辑。以下是 create_named_object 和 create_sticky_object 、`create_object`的代码片段：
 
 ```rust
     /// Create a new named object and return the ConstructorRef. Named objects can be queried globally
@@ -205,6 +223,12 @@ module 0x42::myObject {
 ![image-20240914104330922](assets/image-20240914104330922.png)
 
 更多请参考：https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/object.move
+
+---
+
+
+
+本文通过详细的代码示例和概念介绍，展示了 Aptos Move 中 Object 的创建与管理方式。我们探讨了两种主要对象类型：可删除对象与不可删除对象，以及它们的实际应用场景。通过深入分析 Aptos 框架中的源码，可以更好地理解对象的生命周期和所有权转移机制，为开发者在智能合约中使用 Object 提供了更全面的参考。
 
 ## 参考
 
