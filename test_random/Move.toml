@@ -1,0 +1,15 @@
+[package]
+name = "test_random"
+version = "1.0.0"
+authors = []
+
+[addresses]
+tester = "0f0b05ecb92899c4b459e6a722f5c5a5d16b8fdec3a3fa8337f915ec39dfefa0"
+[dev-addresses]
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dev-dependencies]
