@@ -44,6 +44,17 @@ module red_packet::red_packet {
         burn_ref: BurnRef
     }
 
+    struct RedPacketInfo has key, store {
+        totalAmount: u64,
+        remainingAmount: u64,
+        remainingPackets: u64,
+        fa: FungibleAsset
+    }
+
+    struct RedPacket has key {
+        message: Table<u64, RedPacketInfo>
+    }
+
     fun init_module(admin: &signer) {
         let constructor_ref = object::create_named_object(admin, SEED);
 
