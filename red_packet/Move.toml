@@ -1,0 +1,15 @@
+[package]
+name = "red_packet"
+version = "1.0.0"
+authors = []
+
+[addresses]
+red_packet="84970069c342cbcf9bb6d69c94eb4a8d7e1831f3f6a737e8099092b8637a9a66"
+[dev-addresses]
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dev-dependencies]
