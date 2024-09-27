@@ -5,6 +5,8 @@ module red_packet::red_packet {
         MintRef,
         TransferRef,
         BurnRef,
+        FungibleStore,
+        Metadata,
         FungibleAsset
     };
     use aptos_framework::object::{Self, Object};
@@ -21,10 +23,27 @@ module red_packet::red_packet {
     const SEED: vector<u8> = b"RedPacketFA";
     const E_RANDOM_DATA_NOT_INITIALIZED: u64 = 1;
     const E_MESSAGE_NOT_FOUND: u64 = 2; // random_data not found
+    const E_INVALID_INPUT: u64 = 3;
+    const E_INSUFFICIENT_FUNDS: u64 = 4;
 
     #[event]
     struct Event<T> has drop, store {
         value: T
+    }
+
+    #[event]
+    struct RedPacketCreatedEvent has drop, store {
+        creator: address,
+        red_packet_id: u64,
+        total_amount: u64,
+        num_packets: u64
+    }
+
+    #[event]
+    struct RedPacketClaimedEvent has drop, store {
+        claimer: address,
+        red_packet_id: u64,
+        claimed_amount: u64
     }
 
     struct Random_data has key {
@@ -44,15 +63,24 @@ module red_packet::red_packet {
         burn_ref: BurnRef
     }
 
-    struct RedPacketInfo has key, store {
+    #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
+    struct RedPacketInfo has key {
         totalAmount: u64,
         remainingAmount: u64,
         remainingPackets: u64,
-        fa: FungibleAsset
+        token_store: Object<FungibleStore>
     }
 
     struct RedPacket has key {
         message: Table<u64, RedPacketInfo>
+    }
+
+    struct RedPacketCounter has key {
+        counter: u64
+    }
+
+    public fun initialize(signer: &signer) {
+        move_to(signer, RedPacketCounter { counter: 0 });
     }
 
     fun init_module(admin: &signer) {
@@ -120,30 +148,64 @@ module red_packet::red_packet {
         event::emit(Event { value: r })
     }
 
+    inline fun create_token_store(pool_signer: &signer, token: Object<Metadata>): Object<FungibleStore> {
+        let constructor_ref = &object::create_object_from_object(pool_signer);
+        fungible_asset::create_store(constructor_ref, token)
+    }
+
     public fun createRedPacket(
-        numPackets: u64, fa: FungibleAsset, amount: u64
-    ): u64 {
+        signer: &signer,
+        num_packets: u64,
+        token: Object<Metadata>,
+        amount: u64
+    ): u64 acquires RedPacketCounter {
+        assert!(num_packets > 0 && amount > 0, E_INVALID_INPUT);
+
         //    1. transferFrom msg.serder address(this) amount
+        primary_fungible_store::deposit(signer::address_of(signer), fa);
         //    2. Record create
         //    3. return redPacketId
+        let counter_ref = borrow_global_mut<RedPacketCounter>(@red_packet);
+        let current_counter = counter_ref.counter;
+        counter_ref.counter = current_counter + 1;
         //    4 event
-        let redPacketId: u64 = 1;
+        let redPacketId: u64 = current_counter + 1;
+        event::emit(
+            RedPacketCreatedEvent {
+                creator: signer::address_of(signer),
+                red_packet_id,
+                total_amount: amount,
+                num_packets
+            }
+        );
         redPacketId
     }
 
-    public fun claimRedPacket(redPacketId: u64) acquires MyTransferRef {
+    public fun claimRedPacket(signer: &signer,red_packet_id: u64) acquires RedPacketInfo{
+        let red_packet_info = borrow_global_mut<RedPacketInfo>(@red_packet);
+        let remaining_amount = red_packet_info.remaining_amount;
+        let remaining_packets = red_packet_info.remaining_packets;
+
+        assert!(remaining_packets > 0, E_INVALID_INPUT);
         //    1. request random word
         //    2. Calculate the amount of the red envelope to be received   getRandomAmount
         //    3. record the claimer
+        red_packet_info.remaining_amount -= claim_amount;
+        red_packet_info.remaining_packets -= 1;
         //    4. transferFrom this address(this) msg.sender amount
         //    5. event
+        event::emit(RedPacketClaimedEvent {
+            claimer: signer::address_of(signer),
+            red_packet_id,
+            claimed_amount: claim_amount,
+        });
     }
 
     fun getRandomAmount(
         remainingAmount: u64, remainingPackets: u64, randomness: u64
     ): u64 {
         if (remainingPackets == 1) {
-            return remainingAmount;
+            return remainingAmount
         };
 
         let maxAmount = (remainingAmount / remainingPackets) * 2;
