@@ -588,3 +588,4 @@ https://explorer.aptoslabs.com/account/0x4cb64ff8439e8a7eff1e513413f711b4ce14ff9
 - https://aptos.dev/en/build/smart-contracts/fungible-asset
 - https://www.youtube.com/watch?v=vnl8zXiN4SQ
 - https://explorer.aptoslabs.com/account/0x9441c7b026a4029d7971ed4d7d9ed08ceaa09a17f3e004d6462a04eac9af457b/modules/code/faucet?network=testnet
+- https://github.com/qiaopengjun5162/hello_aptos
