@@ -1,0 +1,16 @@
+[package]
+name = "price_feeds"
+version = "1.0.0"
+authors = []
+
+[addresses]
+price_feeds_addr = "c327fa8bef56e4a0d1d82d6fdac8ddf4e0d31a907836810081cffa67c21601ee"
+
+[dev-addresses]
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-framework.git"
+rev = "mainnet"
+subdir = "aptos-framework"
+
+[dev-dependencies]
